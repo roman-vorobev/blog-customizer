@@ -18,10 +18,19 @@ type SelectProps = {
 	onChange?: (selected: OptionType) => void;
 	onClose?: () => void;
 	title?: string;
+	disabledValues?: string[];
 };
 
 export const Select = (props: SelectProps) => {
-	const { options, placeholder, selected, onChange, onClose, title } = props;
+	const {
+		options,
+		placeholder,
+		selected,
+		onChange,
+		onClose,
+		title,
+		disabledValues = [],
+	} = props;
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const placeholderRef = useRef<HTMLDivElement>(null);
@@ -42,6 +51,7 @@ export const Select = (props: SelectProps) => {
 	const handleOptionClick = (option: OptionType) => {
 		setIsOpen(false);
 		onChange?.(option);
+		if (disabledValues.includes(option.value)) return;
 	};
 	const handlePlaceHolderClick: MouseEventHandler<HTMLDivElement> = () => {
 		setIsOpen((isOpen) => !isOpen);
@@ -84,15 +94,20 @@ export const Select = (props: SelectProps) => {
 				</div>
 				{isOpen && (
 					<ul className={styles.select} data-testid='selectDropdown'>
-						{options
-							.filter((option) => selected?.value !== option.value)
-							.map((option) => (
+						{options.map((option) => {
+							const isDisabled = disabledValues.includes(option.value);
+							const isSelected = selected?.value === option.value;
+
+							return (
 								<Option
 									key={option.value}
 									option={option}
+									disabled={isDisabled}
+									selected={isSelected}
 									onClick={() => handleOptionClick(option)}
 								/>
-							))}
+							);
+						})}
 					</ul>
 				)}
 			</div>
