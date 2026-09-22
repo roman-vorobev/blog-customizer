@@ -38,6 +38,9 @@ export const ArticleParamsForm = ({
 	};
 
 	useEffect(() => {
+		if (!isOpen) {
+			return;
+		}
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				isOpen &&
